@@ -27,6 +27,8 @@ class LightGBMForecaster:
         for extra in ("store_id_code", "item_id_code", "cat_id_code", "state_id_code"):
             if extra in df.columns:
                 cols.append(extra)
+        # Drop features that are entirely missing (e.g. weather when no external file)
+        cols = [c for c in cols if not df[c].isna().all()]
         return cols
 
     def _candidate_grid(self) -> list[dict[str, Any]]:
@@ -55,14 +57,23 @@ class LightGBMForecaster:
 
     def fit(self, train: pd.DataFrame, valid: pd.DataFrame | None = None) -> "LightGBMForecaster":
         self.feature_cols = self._available_features(train)
-        use = train.dropna(subset=self.feature_cols + ["sales"]).copy()
+        # Only require core lag features for row completeness; fill other NaNs
+        required = [c for c in ("lag_1", "lag_7", "lag_14", "lag_28", "sales") if c in self.feature_cols or c == "sales"]
+        use = train.dropna(subset=required).copy()
+        use[self.feature_cols] = use[self.feature_cols].fillna(0.0)
         X = use[self.feature_cols]
         y = use["sales"].astype(float)
+        if len(X) == 0:
+            raise ValueError(
+                f"LightGBM training set empty after dropna on {required}; "
+                f"feature_cols={self.feature_cols}"
+            )
 
         X_val = y_val = None
         if valid is not None and len(valid):
-            v = valid.dropna(subset=self.feature_cols + ["sales"])
+            v = valid.dropna(subset=required).copy()
             if len(v):
+                v[self.feature_cols] = v[self.feature_cols].fillna(0.0)
                 X_val = v[self.feature_cols]
                 y_val = v["sales"].astype(float)
 

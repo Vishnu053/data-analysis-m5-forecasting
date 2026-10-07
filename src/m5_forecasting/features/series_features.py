@@ -36,6 +36,8 @@ def add_series_features(df: pd.DataFrame, lags: list[int] | None = None) -> pd.D
     for col in ("snap", "has_event", "precip_in", "is_severe_weather", "sell_price", "avg_temp_f"):
         if col not in out.columns:
             out[col] = 0.0
+        else:
+            out[col] = out[col].fillna(0.0)
     if "price_change" not in out.columns:
         out["price_change"] = out.groupby("series_id")["sell_price"].pct_change()
         out["price_change"] = out["price_change"].replace([np.inf, -np.inf], np.nan).fillna(0.0)

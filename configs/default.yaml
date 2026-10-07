@@ -4,7 +4,7 @@ project:
   seed: 42
 
 paths:
-  raw_dir: data/raw
+  raw_dir: data/raw_subset
   processed_dir: data/processed
   external_dir: data/external
   sample_dir: data/sample
@@ -27,7 +27,7 @@ synthetic:
 
 data:
   # If true and raw CSVs missing, generate synthetic M5-compatible tables
-  use_synthetic_fallback: true
+  use_synthetic_fallback: false
   # Columns expected in long sales table after melt
   id_cols: [item_id, store_id, cat_id, dept_id, state_id]
   target: sales
@@ -60,7 +60,7 @@ models:
   # Series aggregation for statistical / DNN models (item-store is sparse)
   series_level: store_cat   # item_store | store_cat | store
   lightgbm:
-    n_estimators: 200
+    n_estimators: 150
     learning_rate: 0.05
     num_leaves: 31
     min_child_samples: 20
@@ -70,15 +70,15 @@ models:
   arima:
     order: [1, 1, 1]
     seasonal_order: [1, 0, 1, 7]
-    max_series: 12
+    max_series: 30
   lstm:
     lookback: 28
     hidden_size: 32
     num_layers: 1
-    epochs: 15
+    epochs: 10
     batch_size: 64
     learning_rate: 0.001
-    max_series: 12
+    max_series: 30
 
 evaluation:
   metrics: [rmse, mae, mape, wrmsse_proxy]

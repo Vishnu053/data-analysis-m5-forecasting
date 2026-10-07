@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<workbook original-version='18.1' source-build='2022.1' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <datasources>
+    <datasource caption='forecast_lgbm_daily' inline='true' name='federated.fc' version='18.1'>
+      <connection class='textscan' directory='extracts' filename='forecast_lgbm_daily.csv' name='textscan.fc' />
+    </datasource>
+    <datasource caption='store_performance_28d' inline='true' name='federated.store' version='18.1'>
+      <connection class='textscan' directory='extracts' filename='store_performance_28d.csv' name='textscan.store' />
+    </datasource>
+    <datasource caption='snap_lift_foods_by_state' inline='true' name='federated.snap' version='18.1'>
+      <connection class='textscan' directory='extracts' filename='snap_lift_foods_by_state.csv' name='textscan.snap' />
+    </datasource>
+    <datasource caption='inventory_underforecast_top15' inline='true' name='federated.inv' version='18.1'>
+      <connection class='textscan' directory='extracts' filename='inventory_underforecast_top15.csv' name='textscan.inv' />
+    </datasource>
+    <datasource caption='deal_lift_by_category' inline='true' name='federated.deal' version='18.1'>
+      <connection class='textscan' directory='extracts' filename='deal_lift_by_category.csv' name='textscan.deal' />
+    </datasource>
+  </datasources>
+  <worksheets>
+    <worksheet name='Demand Outlook'><table><view><datasources><datasource name='federated.fc' /></datasources></view></table></worksheet>
+    <worksheet name='Store Performance'><table><view><datasources><datasource name='federated.store' /></datasources></view></table></worksheet>
+    <worksheet name='SNAP Opportunities'><table><view><datasources><datasource name='federated.snap' /></datasources></view></table></worksheet>
+    <worksheet name='Inventory Risk'><table><view><datasources><datasource name='federated.inv' /></datasources></view></table></worksheet>
+    <worksheet name='Deal Sensitivity'><table><view><datasources><datasource name='federated.deal' /></datasources></view></table></worksheet>
+  </worksheets>
+</workbook>
