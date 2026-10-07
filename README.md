@@ -1,20 +1,33 @@
 # Walmart Sales Forecasting (M5)
 
-Production-style batch pipeline for the [M5 Forecasting Accuracy](https://www.kaggle.com/c/m5-forecasting-accuracy) problem: clean intermittent retail demand, engineer calendar / price / SNAP / weather features, train and compare **seasonal naïve → SARIMA → LightGBM → LSTM**, then export holdout forecasts for a Tableau merchandising dashboard.
+Production-style batch pipeline for the [M5 Forecasting Accuracy](https://www.kaggle.com/c/m5-forecasting-accuracy) problem: clean intermittent retail demand, engineer calendar / price / SNAP / weather features, and train a **LightGBM** forecaster to export holdout forecasts for a Tableau merchandising dashboard.
 
 ```text
-raw / synthetic M5  →  clean  →  features  →  train  →  batch predict  →  Tableau CSVs
+raw M5 CSVs  →  clean  →  features  →  LightGBM train  →  batch predict  →  Tableau extracts
 ```
+
+## Business-Insights Dashboard
+
+The **[`walmart-m5-tableau/`](walmart-m5-tableau/)** folder contains a ready-to-present Tableau + HTML dashboard package with executive KPIs, LightGBM forecast accuracy, SNAP/promotion lift analysis, and inventory risk views.
+
+| Artifact | Description |
+|----------|-------------|
+| [`walmart-m5-tableau/Walmart_M5_Executive_Dashboard.html`](walmart-m5-tableau/Walmart_M5_Executive_Dashboard.html) | Standalone HTML dashboard for browser viewing |
+| [`walmart-m5-tableau/Walmart_M5_Dashboard.twbx`](walmart-m5-tableau/Walmart_M5_Dashboard.twbx) | Packaged Tableau workbook |
+| [`walmart-m5-tableau/PRESENTATION_GUIDE.md`](walmart-m5-tableau/PRESENTATION_GUIDE.md) | Presentation flow and talking points |
+| [`walmart-m5-tableau/DATA_DICTIONARY.md`](walmart-m5-tableau/DATA_DICTIONARY.md) | Extract schemas and field definitions |
+| [`walmart-m5-tableau/extracts/`](walmart-m5-tableau/extracts/) | CSV/JSON extracts powering the dashboards |
+
+See also [docs/TABLEAU.md](docs/TABLEAU.md) for refresh workflows and suggested sheets.
 
 ## Why this project
 
 | Interview theme | What ships here |
 |-----------------|-----------------|
 | Data cleaning | Negative-sale fixes, IQR winsorization, stockout streak flags + audit table |
-| Classical stats | Per-series SARIMA with weekly seasonality |
-| ML | LightGBM with compact hyperparameter search + feature importance |
-| Deep learning | Lightweight PyTorch LSTM (recursive multi-step) |
-| External signals | SNAP by state, events, sell prices, synthetic weather |
+| ML forecasting | LightGBM with compact hyperparameter search + feature importance |
+| External signals | SNAP by state, events, sell prices, weather |
+| Business insights | Executive dashboard with demand outlook, SNAP/deal timing, inventory risk |
 | Production | YAML config, Click CLI, parquet artifacts, batch predict, Tableau extracts |
 
 ## Quick start

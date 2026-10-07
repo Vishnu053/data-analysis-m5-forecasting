@@ -45,6 +45,7 @@ def clean_sales(df: pd.DataFrame, cfg: dict[str, Any]) -> tuple[pd.DataFrame, pd
     fill_neg = bool(clean_cfg.get("fill_negative_sales", True))
 
     out = df.copy()
+    out["sales"] = out["sales"].astype(float)
     out["sales_raw"] = out["sales"]
     out["is_negative_fixed"] = False
     out["is_outlier"] = False
