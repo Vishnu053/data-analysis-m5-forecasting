@@ -66,21 +66,46 @@ def predict_cmd(ctx: click.Context) -> None:
         click.echo(f"  {k}: {v}")
 
 
+@main.command("story")
+@click.pass_context
+def story_cmd(ctx: click.Context) -> None:
+    """Rebuild Walmart customer storytelling dashboard from latest forecasts."""
+    import pandas as pd
+
+    from m5_forecasting.pipeline.story_dashboard import export_customer_story
+
+    cfg = ctx.obj["cfg"]
+    forecasts_path = Path(cfg["paths"]["forecasts_dir"]) / "holdout_forecasts.parquet"
+    metrics_path = Path(cfg["paths"]["metrics_dir"]) / "model_comparison.csv"
+    test_path = Path(cfg["paths"]["models_dir"]) / "test_series.parquet"
+    if not forecasts_path.exists() or not metrics_path.exists():
+        raise click.ClickException("Run predict first so forecasts and metrics exist.")
+    forecasts = pd.read_parquet(forecasts_path)
+    metrics = pd.read_csv(metrics_path)
+    test_series = pd.read_parquet(test_path)
+    paths = export_customer_story(cfg, forecasts, metrics, test_series)
+    click.echo("Customer story dashboard:")
+    click.echo(f"  HTML: {paths.get('story_html')}")
+    click.echo(f"  Tableau extracts: {paths.get('story_dir')}")
+
+
 @main.command("run-all")
 @click.pass_context
 def run_all_cmd(ctx: click.Context) -> None:
-    """Full pipeline: prepare → train → predict."""
+    """Full pipeline: prepare → train → predict (+ customer story dashboard)."""
     cfg = ctx.obj["cfg"]
     click.echo("==> prepare")
     prepare_datasets(cfg)
     click.echo("==> train")
     train_models(cfg)
-    click.echo("==> predict")
+    click.echo("==> predict + customer story")
     paths = run_batch_predict(cfg)
     summary = Path(cfg["paths"]["metrics_dir"]) / "run_summary.json"
     if summary.exists():
         click.echo(summary.read_text())
     click.echo("Pipeline complete.")
+    if "story_html" in paths:
+        click.echo(f"  Customer story HTML: {paths['story_html']}")
     for k, v in paths.items():
         click.echo(f"  {k}: {v}")
 

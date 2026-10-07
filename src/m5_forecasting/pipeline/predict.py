@@ -12,6 +12,7 @@ import pandas as pd
 from m5_forecasting.config import ensure_dirs
 from m5_forecasting.pipeline.metrics import summarize_forecasts
 from m5_forecasting.pipeline.prepare import load_prepared
+from m5_forecasting.pipeline.story_dashboard import export_customer_story
 from m5_forecasting.viz.plots import plot_forecast_vs_actual, plot_model_comparison
 
 
@@ -130,4 +131,10 @@ def run_batch_predict(cfg: dict[str, Any]) -> dict[str, Path]:
     }
     (metrics_dir / "run_summary.json").write_text(json.dumps(summary, indent=2))
     paths["run_summary"] = metrics_dir / "run_summary.json"
+
+    # Walmart customer storytelling dashboard (champion model only)
+    if len(metrics) and len(forecasts):
+        story_paths = export_customer_story(cfg, forecasts, metrics, future_series)
+        paths.update({f"story_{k}" if not k.startswith("story") else k: v for k, v in story_paths.items()})
+
     return paths
