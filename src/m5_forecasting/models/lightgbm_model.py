@@ -75,7 +75,8 @@ class LightGBMForecaster:
             model = lgb.LGBMRegressor(**cfg)
             fit_kwargs: dict[str, Any] = {}
             if X_val is not None:
-                fit_kwargs["eval_set"] = [(X_val, y_val)]
+                fit_kwargs["eval_X"] = X_val
+                fit_kwargs["eval_y"] = y_val
                 fit_kwargs["callbacks"] = [
                     lgb.early_stopping(early, verbose=False),
                     lgb.log_evaluation(period=0),
