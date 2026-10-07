@@ -21,19 +21,19 @@ raw / synthetic M5  →  clean  →  features  →  train  →  batch predict  �
 
 ```bash
 # from repo root
-python -m pip install -r requirements.txt
-python -m pip install -e .
+python3 -m pip install -r requirements.txt
+python3 -m pip install -e .
 
 # Full pipeline (generates M5-compatible synthetic data if Kaggle files are absent)
-python scripts/run_pipeline.py run-all
+python3 scripts/run_pipeline.py run-all
 ```
 
 Or step-by-step:
 
 ```bash
-python scripts/run_pipeline.py prepare
-python scripts/run_pipeline.py train
-python scripts/run_pipeline.py predict
+python3 scripts/run_pipeline.py prepare
+python3 scripts/run_pipeline.py train
+python3 scripts/run_pipeline.py predict
 ```
 
 Outputs land under `outputs/`:
@@ -86,9 +86,8 @@ docs/TABLEAU.md
 Edit `configs/default.yaml` to change series count, enabled models, LightGBM / LSTM hyperparameters, and cleaning thresholds. Pass an alternate file with:
 
 ```bash
-python scripts/run_pipeline.py --config configs/default.yaml run-all
+python3 scripts/run_pipeline.py --config configs/default.yaml run-all
 ```
-
 ## Tests
 
 ```bash
