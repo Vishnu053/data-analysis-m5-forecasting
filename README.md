@@ -88,6 +88,7 @@ Edit `configs/default.yaml` to change series count, enabled models, LightGBM / L
 ```bash
 python3 scripts/run_pipeline.py --config configs/default.yaml run-all
 ```
+
 ## Tests
 
 ```bash
@@ -96,4 +97,11 @@ pytest -q
 
 ## Tableau
 
-See [docs/TABLEAU.md](docs/TABLEAU.md) for extract schemas and a merchandiser-oriented dashboard outline (assortment planning, SNAP/deal timing, model scorecard).
+- **Ops dashboard** — all models + data quality: [docs/TABLEAU.md](docs/TABLEAU.md)
+- **Walmart customer story** — champion-model business insights for executive storytelling: [docs/WALMART_CUSTOMER_STORY.md](docs/WALMART_CUSTOMER_STORY.md)
+
+```bash
+python3 scripts/run_pipeline.py story
+# open outputs/tableau/walmart_customer_story.html
+# or connect Tableau Desktop to outputs/tableau/story/*.csv
+```

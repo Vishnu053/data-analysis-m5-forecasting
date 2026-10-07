@@ -113,3 +113,12 @@ def test_end_to_end_smoke(tiny_cfg: dict):
     assert set(metrics["model"]).issuperset({"seasonal_naive", "lightgbm"})
     assert Path(paths["tableau_forecasts"]).exists()
     assert Path(paths["fig_rmse"]).exists()
+    assert Path(paths["story_html"]).exists()
+    story_dir = Path(paths["story_dir"])
+    assert (story_dir / "story_kpi.csv").exists()
+    assert (story_dir / "story_snap_lift.csv").exists()
+    assert (story_dir / "story_inventory_risk.csv").exists()
+    assert (story_dir / "story_talking_points.csv").exists()
+    html = Path(paths["story_html"]).read_text(encoding="utf-8")
+    assert "Walmart" in html
+    assert "Champion model" in html
