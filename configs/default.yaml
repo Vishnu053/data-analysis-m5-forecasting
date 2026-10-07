@@ -1,0 +1,90 @@
+# M5 Walmart Sales Forecasting — default pipeline configuration
+project:
+  name: m5-walmart-sales-forecasting
+  seed: 42
+
+paths:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  external_dir: data/external
+  sample_dir: data/sample
+  output_dir: outputs
+  models_dir: outputs/models
+  forecasts_dir: outputs/forecasts
+  metrics_dir: outputs/metrics
+  tableau_dir: outputs/tableau
+  figures_dir: outputs/figures
+
+# Synthetic M5-style sample (used when Kaggle files are absent)
+synthetic:
+  n_days: 400
+  n_items: 12
+  n_stores: 3
+  states: [CA, TX, WI]
+  categories: [FOODS, HOBBIES, HOUSEHOLD]
+  forecast_horizon: 28
+  start_date: "2015-01-01"
+
+data:
+  # If true and raw CSVs missing, generate synthetic M5-compatible tables
+  use_synthetic_fallback: true
+  # Columns expected in long sales table after melt
+  id_cols: [item_id, store_id, cat_id, dept_id, state_id]
+  target: sales
+  date_col: date
+  # Hold out last N days for validation / test
+  validation_days: 28
+  test_days: 28
+
+cleaning:
+  # IQR multiplier for outlier flagging (winsorize, do not drop)
+  iqr_multiplier: 3.0
+  winsorize: true
+  # Treat consecutive zeros longer than this as possible stockout (flag only)
+  stockout_zero_streak: 14
+  fill_negative_sales: true
+
+features:
+  lags: [1, 7, 14, 28]
+  rolling_windows: [7, 14, 28]
+  rolling_stats: [mean, std]
+  include_price: true
+  include_snap: true
+  include_events: true
+  include_weather: true
+  include_calendar: true
+
+models:
+  # Models to train in the batch pipeline
+  enabled: [seasonal_naive, arima, lightgbm, lstm]
+  # Series aggregation for statistical / DNN models (item-store is sparse)
+  series_level: store_cat   # item_store | store_cat | store
+  lightgbm:
+    n_estimators: 200
+    learning_rate: 0.05
+    num_leaves: 31
+    min_child_samples: 20
+    subsample: 0.8
+    colsample_bytree: 0.8
+    early_stopping_rounds: 30
+  arima:
+    order: [1, 1, 1]
+    seasonal_order: [1, 0, 1, 7]
+    max_series: 12
+  lstm:
+    lookback: 28
+    hidden_size: 32
+    num_layers: 1
+    epochs: 15
+    batch_size: 64
+    learning_rate: 0.001
+    max_series: 12
+
+evaluation:
+  metrics: [rmse, mae, mape, wrmsse_proxy]
+  primary_metric: rmse
+
+tableau:
+  export_forecasts: true
+  export_metrics: true
+  export_feature_importance: true
